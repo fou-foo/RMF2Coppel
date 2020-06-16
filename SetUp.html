@@ -419,15 +419,33 @@ wc -l InfTransacciones_CtesEcommerce_DR.csv # vamos a permitir hasta un 10% de r
 <div id="localmente-el-ubuntu-20" class="section level2">
 <h2>Localmente el Ubuntu 20</h2>
 <p>Creamos la tabla a partir de la muestra total</p>
+<p>Primero creamos una tabla con los features que se utilizan con una columna contando el número del user</p>
+<pre class="sql"><code>CREATE TABLE `rmf2gcp.RawData.demographics_features` AS  
+  SELECT ROW_NUMBER() OVER() id_table_dem, * 
+    FROM (
+      SELECT ID_CTE as USERID, CONCAT( CAST( DATE_DIFF( CURRENT_DATE(), cast( FECHA_NAC as date), YEAR)  as string) , ',', CAST( EDO_CIVIL as string), ',', CAST( GENERO as string) ) as FEATURES, D_EDO as STATE
+        FROM `rmf2gcp.RawData.demographics` 
+        order by ID_CTE
+          ) as A # 18,986,920
+        WHERE A.FEATURES IS NOT NULL # 18,985,770
+
+CREATE OR REPLACE TABLE `rmf2gcp.RawData.demographics_features` AS  
+select * 
+from `rmf2gcp.RawData.demographics_features`
+order by id_table_dem
+
+</code></pre>
+<p>Ya de ahi nos seguimos a crear el agregado de las transacciones</p>
 <pre class="sql"><code>CREATE OR REPLACE TABLE RawData.Workflow_aggregado as (
-select dem.ID_CTE ,  cast(REGEXP_REPLACE(T.ID_FAM, '^.', '') as int64 )  as ID_FAM  , count(*) as FREQUENCY
+select dem.id_table_dem, dem.USERID ,  cast(REGEXP_REPLACE(T.ID_FAM, '^.', '') as int64 )  as ID_FAM  , count(*) as FREQUENCY
   from `RawData.transactional` as T
-    inner join `RawData.demographics` as dem
-  on T.ID_CTE  = dem.ID_CTE
+    inner join `RawData.demographics_features` as dem
+  on T.ID_CTE  = dem.USERID
 #  where dem.D_EDO='JALISCO                  '
 #  and T.FECHA_TICKET &gt;='2016-01-01'
  # and T.FECHA_TICKET &lt;'2018-01-01'
-  group by dem.ID_CTE , T.ID_FAM   );</code></pre>
+  group by id_table_dem, dem.USERID , T.ID_FAM   );
+</code></pre>
 <p>Para poder extraer la info de BQ installamos a un local <code>pip install --upgrade google-cloud-bigquery[pandas]</code> y luego configuramos los servicios de <a href="https://cloud.google.com/docs/authentication/getting-started">service account</a> para la API de BQ ( se uede hacer con la consola web pero mejor con el SDK)</p>
 <pre class="sh"><code>mkdir BQkeys #para guardar las llaves
 gcloud init
@@ -473,7 +491,7 @@ def get_data_BQ(sql):
     return(df)
 sql =  '''SELECT *
 FROM `rmf2gcp.RawData.Workflow_aggregado`
-limit 3105886 #310 588 606 ''' # corre en mi local y pesa 56MB</code></pre>
+where id_table_dem &lt;= 189857#18985770 # 1% ''' # corre en mi local y pesa 56MB</code></pre>
 <p>Aca una referencia para automatizar el flujo con funciones cloud y <a href="https://cloud.google.com/dataproc/docs/tutorials/workflow-scheduler?hl=es">Cloud Scheduler</a> <strong>sí lgramos determinar el layout de escritura en un bocket para no pasar por BigQuery</strong></p>
 <p>Y seguimos esta guía para el cluster para ejecutarlo en todo el dataset <a href="https://cloud.google.com/dataproc/docs/tutorials/jupyter-notebook?hl=es#console">notebook-datapproc</a></p>
 <div id="create-bucket-for-save-notebooks" class="section level3">
@@ -502,14 +520,16 @@ gsutil cp  -r /home/antonio/Desktop/github/RMF2Coppel/ gs://rmf2code/notebooks/j
 <p>Vamos a utilizar los datos de transacciones creadas con el query y guardadas en el archivo <code>transacctional_sample.csv</code></p>
 <pre class="sql"><code>SELECT *
 FROM `rmf2gcp.RawData.Workflow_aggregado`
-limit 31058</code></pre>
+where id_table_dem &lt;= 189857#18985770 # 1%</code></pre>
 <p>Y el query siguiente para el archivo <code>transaccional_sample_features_combined.csv</code></p>
 <pre class="sql"><code>select ID_CTE as USERID, CONCAT( CAST( DATE_DIFF( CURRENT_DATE(), cast( FECHA_NAC as date), YEAR)  as string) , ',', CAST( EDO_CIVIL as string), ',', CAST( GENERO as string) ) as FEATURES, D_EDO as STATE
-from `rmf2gcp.RawData.demographics`
+from `rmf2gcp.RawData.demographics_features`
 where ID_CTE in
 (SELECT  ID_CTE
 FROM `rmf2gcp.RawData.Workflow_aggregado`
-limit 31058)</code></pre>
+where id_table_dem &lt;= 189857#18985770 # 1%
+)
+</code></pre>
 </div>
 </div>
 <div id="reproduciendo-el-analísis-del-notebook-hybrid-recommendation-engine.jupyter-py35" class="section level1">
