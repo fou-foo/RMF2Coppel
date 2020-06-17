@@ -76,16 +76,39 @@ Despues de crear las tablas en BigQuery, encontramos los siguentes detalles :
 
 Creamos la tabla a partir de la muestra total
 
+Primero creamos una tabla con los features que se utilizan con una columna contando el número del user
+
+```sql
+CREATE TABLE `rmf2gcp.RawData.demographics_features` AS  
+  SELECT ROW_NUMBER() OVER() id_table_dem, * 
+    FROM (
+      SELECT ID_CTE as USERID, CONCAT( CAST( DATE_DIFF( CURRENT_DATE(), cast( FECHA_NAC as date), YEAR)  as string) , ',', CAST( EDO_CIVIL as string), ',', CAST( GENERO as string) ) as FEATURES, D_EDO as STATE
+        FROM `rmf2gcp.RawData.demographics` 
+        order by ID_CTE
+          ) as A # 18,986,920
+        WHERE A.FEATURES IS NOT NULL # 18,985,770
+
+CREATE OR REPLACE TABLE `rmf2gcp.RawData.demographics_features` AS  
+select * 
+from `rmf2gcp.RawData.demographics_features`
+order by id_table_dem
+
+
+```
+
+Ya de ahi nos seguimos a crear el agregado de las transacciones
+
 ```sql
 CREATE OR REPLACE TABLE RawData.Workflow_aggregado as (
-select dem.ID_CTE ,  cast(REGEXP_REPLACE(T.ID_FAM, '^.', '') as int64 )  as ID_FAM  , count(*) as FREQUENCY
+select dem.id_table_dem, dem.USERID ,  cast(REGEXP_REPLACE(T.ID_FAM, '^.', '') as int64 )  as ID_FAM  , count(*) as FREQUENCY
   from `RawData.transactional` as T
-    inner join `RawData.demographics` as dem
-  on T.ID_CTE  = dem.ID_CTE
+    inner join `RawData.demographics_features` as dem
+  on T.ID_CTE  = dem.USERID
 #  where dem.D_EDO='JALISCO                  '
 #  and T.FECHA_TICKET >='2016-01-01'
  # and T.FECHA_TICKET <'2018-01-01'
-  group by dem.ID_CTE , T.ID_FAM   );
+  group by id_table_dem, dem.USERID , T.ID_FAM   );
+
 ```
 
 Para poder extraer la info de BQ installamos a un local `pip install --upgrade google-cloud-bigquery[pandas]` y luego configuramos los servicios de [service account](https://cloud.google.com/docs/authentication/getting-started) para la API de BQ ( se uede hacer con la consola web pero mejor con el SDK)
@@ -157,7 +180,7 @@ def get_data_BQ(sql):
     return(df)
 sql =  '''SELECT *
 FROM `rmf2gcp.RawData.Workflow_aggregado`
-limit 3105886 #310 588 606 ''' # corre en mi local y pesa 56MB
+where id_table_dem <= 189857#18985770 # 1% ''' # corre en mi local y pesa 56MB
 ```
 
 Aca una referencia para automatizar el flujo con funciones cloud y [Cloud Scheduler](https://cloud.google.com/dataproc/docs/tutorials/workflow-scheduler?hl=es) __sí lgramos determinar el layout de escritura en un bocket para no pasar por BigQuery__
@@ -202,19 +225,40 @@ Vamos a utilizar los datos de transacciones creadas con el query y guardadas en 
 ```sql
 SELECT *
 FROM `rmf2gcp.RawData.Workflow_aggregado`
-limit 31058
+where id_table_dem <= 189857#18985770 # 1%
 ```
 Y el query siguiente para el archivo `transaccional_sample_features_combined.csv`
 
 ```sql
 select ID_CTE as USERID, CONCAT( CAST( DATE_DIFF( CURRENT_DATE(), cast( FECHA_NAC as date), YEAR)  as string) , ',', CAST( EDO_CIVIL as string), ',', CAST( GENERO as string) ) as FEATURES, D_EDO as STATE
-from `rmf2gcp.RawData.demographics`
+from `rmf2gcp.RawData.demographics_features`
 where ID_CTE in
 (SELECT  ID_CTE
 FROM `rmf2gcp.RawData.Workflow_aggregado`
-limit 31058)
+where id_table_dem <= 189857#18985770 # 1%
+)
+
 ```
 
-# Reproduciendo el analísis del notebook `Hybrid Recommendation Engine.jupyter-py35`
+# Reproduciendo el analísis del notebook `Collaborative_Filtering_NN_model`
 
-### De manera local
+Como tienen otro layout de los datos de entraga creamos otra tabla en BigQuery que depende de las anteriores (nada más para mantenor los indices para los tamaños de muestra)
+
+```sql
+CREATE OR REPLACE TABLE rmf2gcp.RawData.Pytorch_trial as (
+SELECT T.ID_CTE ,FECHA_TICKET, cast(REGEXP_REPLACE(T.ID_FAM, '^.', '') as int64 ) as ID_FAM, dem.id_table_dem, d.GENERO, DATE_DIFF( CURRENT_DATE(), cast( FECHA_NAC as date), YEAR) as EDAD
+FROM `rmf2gcp.RawData.transactional` as T 
+inner join `rmf2gcp.RawData.demographics_features` as dem 
+on dem.id_table_dem = T.ID_CTE
+inner join `rmf2gcp.RawData.demographics` as d 
+on d.ID_CTE = T.ID_CTE
+)
+
+CREATE OR REPLACE TABLE rmf2gcp.RawData.Pytorch_trial as (
+SELECT *
+FROM rmf2gcp.RawData.Pytorch_trial
+order by ID_CTE
+)
+
+
+```

@@ -240,6 +240,25 @@ where id_table_dem <= 189857#18985770 # 1%
 
 ```
 
-# Reproduciendo el analísis del notebook `Hybrid Recommendation Engine.jupyter-py35`
+# Reproduciendo el analísis del notebook `Collaborative_Filtering_NN_model`
 
-### De manera local
+Como tienen otro layout de los datos de entraga creamos otra tabla en BigQuery que depende de las anteriores (nada más para mantenor los indices para los tamaños de muestra)
+
+```sql
+CREATE OR REPLACE TABLE rmf2gcp.RawData.Pytorch_trial as (
+SELECT T.ID_CTE ,FECHA_TICKET, cast(REGEXP_REPLACE(T.ID_FAM, '^.', '') as int64 ) as ID_FAM, dem.id_table_dem, d.GENERO, DATE_DIFF( CURRENT_DATE(), cast( FECHA_NAC as date), YEAR) as EDAD
+FROM `rmf2gcp.RawData.transactional` as T 
+inner join `rmf2gcp.RawData.demographics_features` as dem 
+on dem.id_table_dem = T.ID_CTE
+inner join `rmf2gcp.RawData.demographics` as d 
+on d.ID_CTE = T.ID_CTE
+)
+
+CREATE OR REPLACE TABLE rmf2gcp.RawData.Pytorch_trial as (
+SELECT *
+FROM rmf2gcp.RawData.Pytorch_trial
+order by ID_CTE
+)
+
+
+```
