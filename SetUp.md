@@ -80,16 +80,16 @@ Primero creamos una tabla con los features que se utilizan con una columna conta
 
 ```sql
 CREATE TABLE `rmf2gcp.RawData.demographics_features` AS  
-  SELECT ROW_NUMBER() OVER() id_table_dem, * 
+  SELECT ROW_NUMBER() OVER() id_table_dem, *
     FROM (
       SELECT ID_CTE as USERID, CONCAT( CAST( DATE_DIFF( CURRENT_DATE(), cast( FECHA_NAC as date), YEAR)  as string) , ',', CAST( EDO_CIVIL as string), ',', CAST( GENERO as string) ) as FEATURES, D_EDO as STATE
-        FROM `rmf2gcp.RawData.demographics` 
+        FROM `rmf2gcp.RawData.demographics`
         order by ID_CTE
           ) as A # 18,986,920
         WHERE A.FEATURES IS NOT NULL # 18,985,770
 
 CREATE OR REPLACE TABLE `rmf2gcp.RawData.demographics_features` AS  
-select * 
+select *
 from `rmf2gcp.RawData.demographics_features`
 order by id_table_dem
 
@@ -214,6 +214,12 @@ Con:
 gcloud beta dataproc clusters create rmf2-cluster1 --enable-component-gateway --bucket rmf2code --region us-central1 --subnet default --zone us-central1-b --single-node --master-machine-type n1-standard-8 --master-boot-disk-size 500 --image-version 1.5-ubuntu18 --optional-components ANACONDA,JUPYTER --project rmf2gcp
 ```
 
+Ahora con disco de estado solido según ras racomendaciones de GCP
+
+```sh
+gcloud beta dataproc clusters create ibmelite-team-18-junio --enable-component-gateway --bucket rmf2code --region us-central1 --subnet default --zone us-central1-b --single-node --master-machine-type n1-highmem-8 --master-boot-disk-type pd-ssd --master-boot-disk-size 250 --image-version 1.5-ubuntu18 --optional-components ANACONDA,JUPYTER --scopes 'https://www.googleapis.com/auth/cloud-platform' --project rmf2gcp --master-min-cpu-platform "Intel Skylake"
+
+```
 
 # Reproduciendo el analísis del notebook `hybridModel.jupyter`
 
@@ -247,10 +253,10 @@ Como tienen otro layout de los datos de entraga creamos otra tabla en BigQuery q
 ```sql
 CREATE OR REPLACE TABLE rmf2gcp.RawData.Pytorch_trial as (
 SELECT T.ID_CTE ,FECHA_TICKET, cast(REGEXP_REPLACE(T.ID_FAM, '^.', '') as int64 ) as ID_FAM, dem.id_table_dem, d.GENERO, DATE_DIFF( CURRENT_DATE(), cast( FECHA_NAC as date), YEAR) as EDAD
-FROM `rmf2gcp.RawData.transactional` as T 
-inner join `rmf2gcp.RawData.demographics_features` as dem 
+FROM `rmf2gcp.RawData.transactional` as T
+inner join `rmf2gcp.RawData.demographics_features` as dem
 on dem.id_table_dem = T.ID_CTE
-inner join `rmf2gcp.RawData.demographics` as d 
+inner join `rmf2gcp.RawData.demographics` as d
 on d.ID_CTE = T.ID_CTE
 )
 
