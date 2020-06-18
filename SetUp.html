@@ -532,11 +532,25 @@ where id_table_dem &lt;= 189857#18985770 # 1%
 </code></pre>
 </div>
 </div>
-<div id="reproduciendo-el-analísis-del-notebook-hybrid-recommendation-engine.jupyter-py35" class="section level1">
-<h1>Reproduciendo el analísis del notebook <code>Hybrid Recommendation Engine.jupyter-py35</code></h1>
-<div id="de-manera-local-1" class="section level3">
-<h3>De manera local</h3>
-</div>
+<div id="reproduciendo-el-analísis-del-notebook-collaborative_filtering_nn_model" class="section level1">
+<h1>Reproduciendo el analísis del notebook <code>Collaborative_Filtering_NN_model</code></h1>
+<p>Como tienen otro layout de los datos de entraga creamos otra tabla en BigQuery que depende de las anteriores (nada más para mantenor los indices para los tamaños de muestra)</p>
+<pre class="sql"><code>CREATE OR REPLACE TABLE rmf2gcp.RawData.Pytorch_trial as (
+SELECT T.ID_CTE ,FECHA_TICKET, cast(REGEXP_REPLACE(T.ID_FAM, '^.', '') as int64 ) as ID_FAM, dem.id_table_dem, d.GENERO, DATE_DIFF( CURRENT_DATE(), cast( FECHA_NAC as date), YEAR) as EDAD
+FROM `rmf2gcp.RawData.transactional` as T 
+inner join `rmf2gcp.RawData.demographics_features` as dem 
+on dem.id_table_dem = T.ID_CTE
+inner join `rmf2gcp.RawData.demographics` as d 
+on d.ID_CTE = T.ID_CTE
+)
+
+CREATE OR REPLACE TABLE rmf2gcp.RawData.Pytorch_trial as (
+SELECT *
+FROM rmf2gcp.RawData.Pytorch_trial
+order by ID_CTE
+)
+
+</code></pre>
 </div>
 
 
