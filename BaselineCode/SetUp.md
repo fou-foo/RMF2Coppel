@@ -1,11 +1,11 @@
 Setup
 ================
 Antonio García
-6/2/2020
+23/6/2020
 
 ### Create proyect in GCP
 
-[console](https://console.cloud.google.com/projectselector2/home/dashboard?hl=es-419&_ga=2.107833418.930555649.1591087211-2107747144.1590254601&_gac=1.86778346.1590759743.CjwKCAjw5cL2BRASEiwAENqAPodrcbNKYucbO6dA4dEAMP2VGrfQmqsPF5TCxfsGrMbXoLBfzWUMjRoCRs0QAvD_BwE)
+[console](https://console.cloud.google.com/?hl=en)
 
 With name `RMF2GCP` and clone repo
 
@@ -64,15 +64,18 @@ wc -l InfTransacciones_CtesEcommerce_DR.csv # vamos a permitir hasta un 10% de r
 24959943 /10
 ```
 
-Despues de crear las tablas en BigQuery, encontramos los siguentes detalles :
-* Información redundante, en los archivos hay variables que no se ocupan
-* La fecha de nacimiento del cliente puede ser usado como __feature__
-* Los archivos de prueba (muestra) y el historico no son consistentes en nombre y número de columnas, __debemos homologar eso__ [revizar como se encuentra directamenta en la base de datos de Evelín]()
+Despues de crear las tablas en BigQuery, encontramos los siguentes detalles:
+
+  1. Información redundante, en los archivos hay variables que no se ocupan
+    
+  2. La fecha de nacimiento del cliente puede ser usado como __feature__
+    
+  3. Los archivos de prueba (muestra) y el historico no son consistentes en nombre y número de columnas, __debemos homologar eso__ [revizar como se encuentra directamenta en la base de datos de Evelín]()
 
 # Reproduciendo el analísis del notebook `PySparkRecommenderWithWorkflow.jupyter-py35`
 
 
-## Localmente el Ubuntu 20
+## Localmente 
 
 Creamos la tabla a partir de la muestra total
 
@@ -204,17 +207,7 @@ gsutil cp  -r /home/antonio/Desktop/github/RMF2Coppel/ gs://rmf2code/notebooks/j
 
 Con:
 
-* OS: Ubuntu 18 # pues es lo que hay de ubuntu, ojala pronto tengan la versión 19 para dejar de preocuparnos por la version de python  
-
-* 1 solo nodo master (a ver si se puede alterar despues esto)
-* En general es una maquina con el doble de capacidad que la de mi casa
-
-
-```sh
-gcloud beta dataproc clusters create rmf2-cluster1 --enable-component-gateway --bucket rmf2code --region us-central1 --subnet default --zone us-central1-b --single-node --master-machine-type n1-standard-8 --master-boot-disk-size 500 --image-version 1.5-ubuntu18 --optional-components ANACONDA,JUPYTER --project rmf2gcp
-```
-
-Ahora con disco de estado solido según ras racomendaciones de GCP
+* OS: Ubuntu 18 
 
 ```sh
 gcloud beta dataproc clusters create ibmelite-team-18-junio --enable-component-gateway --bucket rmf2code --region us-central1 --subnet default --zone us-central1-b --single-node --master-machine-type n1-highmem-8 --master-boot-disk-type pd-ssd --master-boot-disk-size 250 --image-version 1.5-ubuntu18 --optional-components ANACONDA,JUPYTER --scopes 'https://www.googleapis.com/auth/cloud-platform' --project rmf2gcp --master-min-cpu-platform "Intel Skylake"
@@ -224,7 +217,6 @@ gcloud beta dataproc clusters create ibmelite-team-18-junio --enable-component-g
 # Reproduciendo el analísis del notebook `hybridModel.jupyter`
 
 
-### De manera local
 
 Vamos a utilizar los datos de transacciones creadas con el query y guardadas en el archivo `transacctional_sample.csv`
 
