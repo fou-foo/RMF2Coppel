@@ -3,6 +3,9 @@ Setup
 Antonio García
 23/6/2020
 
+### Cast from csv to parquet 
+View this [entry](https://stackoverflow.com/questions/50604133/convert-csv-to-parquet-file-using-python) details python3.X
+
 ### Create proyect in GCP
 
 [console](https://console.cloud.google.com/?hl=en)
