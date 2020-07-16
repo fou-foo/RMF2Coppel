@@ -5,7 +5,7 @@ Antonio García
 
 ### Cast from csv to parquet 
 View this [entry](https://stackoverflow.com/questions/50604133/convert-csv-to-parquet-file-using-python) details python3.X
-
+IMPORTANT see dependencies `pyarrow`
 ### Create proyect in GCP
 
 [console](https://console.cloud.google.com/?hl=en)
