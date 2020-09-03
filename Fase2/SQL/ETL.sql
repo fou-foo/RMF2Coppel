@@ -50,8 +50,7 @@ WITH Demogra AS (
        , t.IMPORTE_VTA
        , t.CANTIDAD_VTA
        , t.PROD_PRECIO_PROMEDIO
-       , t.TIPOCOMPRA
-       , t.FECHACORTE, 
+       , t.TIPOCOMPRA, 
  Demogra.*/*, 
         tel.TIPOTELEFONO
        , tel.NUMEROTELEFONOORIGEN
