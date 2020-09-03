@@ -1,14 +1,18 @@
 
 
-
 CREATE  TABLE  CENIC.ANALYTICS.ANTONIO_MRF2MERGE_TRANS_DEMO AS (
 
+WITH semilla as (
+select setseed(0.0)
+), 
 
 
-WITH Demogra AS (
+
+ Demogra AS (
  SELECT *
   FROM ANALITICAAFORE.ADMIN.BASECLIENTES_SISTEMA_REC 
  ), 
+ 
  
  
   VilmaTel AS (
@@ -20,6 +24,8 @@ WITH Demogra AS (
 
   FROM CENIC.BIG.MAETELEFONOS_MAY19
  ), 
+ 
+ 
    temp1 AS (
  SELECT IDU_CLIENTECODIGOMAESTRO, 
          DES_CORREOELECTRONICO
@@ -67,7 +73,12 @@ WITH Demogra AS (
 	ON Demogra.ID_CTE = tel.NUMEROCLIENTE
 	LEFT JOIN (select  distinct  IDU_CLIENTECODIGOMAESTRO, DES_CORREOELECTRONICO,DES_ORIGEN
 	           from   VilmaEmail WHERE INDICE = 1) as Email
-	ON Demogra.ID_CTE =Email.IDU_CLIENTECODIGOMAESTRO 
+	ON Demogra.ID_CTE =Email.IDU_CLIENTECODIGOMAESTRO
+	), 
+	
+	
+	res2 as (
+	select *, random() as Sampling from res order by FECHA_TICKET
 	)
 	
-	select * from res order by FECHA_TICKET ) DISTRIBUTE ON  (ID_CTE) 
+	select * from res2  ) DISTRIBUTE ON  (ID_CTE) 
