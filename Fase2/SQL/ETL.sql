@@ -1,20 +1,17 @@
 
+CREATE  TABLE  CENIC.ANALYTICS.ANTONIO_MRF2_Demograficos AS (
 
-CREATE  TABLE  CENIC.ANALYTICS.ANTONIO_MRF2MERGE_TRANS_DEMO AS (
-
+--fijamos semilla para reproducibilidad de los numeros pseudoaleatorios
 WITH semilla as (
 select setseed(0.0)
 ), 
-
-
-
+--informacion de felipe 
  Demogra AS (
  SELECT *
   FROM ANALITICAAFORE.ADMIN.BASECLIENTES_SISTEMA_REC 
  ), 
  
- 
- 
+ --numeros de telefono que recopilo Vilma 
   VilmaTel AS (
  SELECT  NUMEROCLIENTE 
        , TIPOTELEFONO
@@ -25,7 +22,7 @@ select setseed(0.0)
   FROM CENIC.BIG.MAETELEFONOS_MAY19
  ), 
  
- 
+ -- emails validados y confrmados que recopilo Vilma
    temp1 AS (
  SELECT IDU_CLIENTECODIGOMAESTRO, 
          DES_CORREOELECTRONICO
@@ -41,23 +38,7 @@ select setseed(0.0)
    ), 
    
   res as (
- SELECT distinct   t.FECHA_TICKET
-       , t.ID_TIENDA
-       , t.ID_TICKET
-       , t.PROD_SKU
-       , t.PROD_DEP
-       , t.DESC_PROD_DEP
-       , t.PROD_CLAS
-       , t.DESC_PROD_CLAS
-       , t.PROD_FAM
-       , t.DESC_PROD_FAM
-       , t.PROD_AREA
-       , t.PROD_CATEGORIA
-       , t.DESC_PROD_CATEGORIA
-       , t.IMPORTE_VTA
-       , t.CANTIDAD_VTA
-       , t.PROD_PRECIO_PROMEDIO
-       , t.TIPOCOMPRA, 
+ SELECT distinct  
  Demogra.*, 
         tel.TIPOTELEFONO
        , tel.NUMEROTELEFONOORIGEN
@@ -65,9 +46,7 @@ select setseed(0.0)
        , tel.CARRIER
 	   , Email.DES_CORREOELECTRONICO
 	   , Email.DES_ORIGEN 
-	   FROM ANALITICAAFORE.ADMIN.TRANSACCIONES_SISTEMA_REC as t 
-	LEFT JOIN  Demogra 
-	on t.ID_CTE =Demogra.ID_CTE
+	   FROM  Demogra 
 	LEFT JOIN  ( select  distinct NUMEROCLIENTE,  TIPOTELEFONO,NUMEROTELEFONOORIGEN, NUMEROTELEFONO, CARRIER   
 	              from VilmaTel WHERE  INDICE = 1) tel 
 	ON Demogra.ID_CTE = tel.NUMEROCLIENTE
@@ -78,7 +57,15 @@ select setseed(0.0)
 	
 	
 	res2 as (
-	select *, random() as Sampling from res order by FECHA_TICKET
+	select *, random() as Sampling from res order by FECHA_ALTA
 	)
 	
 	select * from res2  ) DISTRIBUTE ON  (ID_CTE) 
+	
+	
+	
+	--Solo copio la tabla para tenerla en nuestro schema
+CREATE  TABLE  CENIC.ANALYTICS.ANTONIO_MRF2_Transaccional AS (
+SELECT * 
+   FROM ANALITICAAFORE.ADMIN.TRANSACCIONES_SISTEMA_REC as t 
+  ) DISTRIBUTE ON  (ID_CTE) 
