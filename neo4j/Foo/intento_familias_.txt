@@ -1,0 +1,10 @@
+https://neo4j.com/docs/operations-manual/current/cloud-deployments/neo4j-gcp/single-instance-vm/#single-instance-gcp
+
+USING PERIODIC COMMIT  LOAD CSV WITH HEADERS FROM 'https://storage.cloud.google.com/desarrollofast/productos_features.csv?authuser=1' AS row where row.id_prodclase is not null MERGE (prod:Familia { IdFamilia: row.id_prodclase} ) ON CREATE SET prod.Departamento = row.Departamento,	prod.Clase=row.Clase, prod.Familia=row.Familia, prod.Categoria=row.Categoria, prod.Subcategoria=row.Subcategoria, 	prod.PROD_AREA=row.PROD_AREA, prod.PROD_DEP= row.PROD_DEP, prod.PROD_CLAS=row.PROD_CLAS, prod.PROD_FAM=row.PROD_FAM
+
+
+
+lo que medio jalo en local 
+
+LOAD CSV WITH HEADERS FROM 'file:///productos_features.csv' AS row where row.id_prodclase is not null 
+MERGE (prod:Familia { IdFamilia: row.id_prodclase, Departamento : row.Departamento,	Clase:row.Clase, Familia:row.Familia, Categoria:row.Categoria, Subcategoria:row.Subcategoria, PROD_AREA:row.PROD_AREA, PROD_DEP:row.PROD_DEP, PROD_CLAS:row.PROD_CLAS, PROD_FAM:row.PROD_FAM})
