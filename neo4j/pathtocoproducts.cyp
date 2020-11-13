@@ -15,4 +15,3 @@ LIMIT 10;
 //ORDER BY frequency DESC
 //LIMIT 10;
 //MATCH (c:Cliente{id_cte:49264509})-[r:COMPRO_CLASE]->(prod:ProdClase)<-[:COMPRO_CLASE]-(cocliente:Cliente)-[r2:COMPRO_CLASE]->(prod2:Prodclase) return count(r2);
-			 
