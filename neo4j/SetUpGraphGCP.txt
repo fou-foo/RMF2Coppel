@@ -41,9 +41,10 @@ FECHA_PRIMERA_COMPRA: date(split(line.FECHA_PRIMERA_COMPRA," ")[0]),
 F_ULT_COMP: date(split(line.F_ULT_COMP," ")[0]),
 FECHA_ALTA: date(split(line.FECHA_ALTA," ")[0]), ESTATUS_MIGRACION:toInteger(line.ESTATUS_MIGRACION)});
 
-# Load Families data 
+CREATE INDEX ON :Cliente(id_cte);
 
-CREATE INDEX ON :Familia(id_Familia);
+
+# Load Families data 
 LOAD CSV WITH HEADERS FROM 'file:///prod_prod_w.csv' AS csvline FIELDTERMINATOR ','
 WITH csvline
 MERGE (prod:Familia{id_Familia: toInteger(csvline.source) } );
@@ -52,15 +53,24 @@ MERGE (prod:Familia{id_Familia: toInteger(csvline.source) } );
 LOAD CSV WITH HEADERS FROM 'file:///prod_prod_no_conexo.csv' AS csvline FIELDTERMINATOR ','
 WITH csvline
 MERGE (prod:Familia{id_Familia: toInteger(csvline.id_Familia) } );
-# Build relations COMPRO_CLASE
 
+CREATE INDEX ON :Familia(id_Familia);
+
+
+# Build relations COMPRO_CLASE
 # la version enterprise y desktop parece que usa el auto periodic commit implicitamente https://community.neo4j.com/t/using-periodic-commit-for-load-csv-gives-open-transaction-error/14562/12
+USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM 'file:///transactional001.csv' AS csvline FIELDTERMINATOR '|'
+WITH csvline
+WHERE csvline.PROD_AREA IN ["Ropa", "Muebles"] 
+MERGE (prod:ProdClase{id_Familia:1000000*(CASE csvline.PROD_AREA WHEN 'Muebles' THEN 2  WHEN 'Ropa' THEN 1 ELSE 3 END)+ 100000*toInteger(csvline.PROD_DEP)+1000*toInteger(csvline.PROD_CLAS)+toInteger(csvline.PROD_FAM)})
+ON CREATE SET prod.PROD_AREA=csvline.PROD_AREA, prod.prod_dep=toInteger(csvline.PROD_DEP), prod.prod_clas=toInteger(csvline.PROD_CLAS),prod.prod_fam=toInteger(csvline.PROD_FAM);
+
 
 USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM 'file:///transactional001.csv' AS csvline FIELDTERMINATOR '|'
 WITH csvline
 WHERE csvline.PROD_AREA IN ["Ropa", "Muebles"] 
 MATCH (c:Cliente{id_cte:toInteger(csvline.ID_CTE)})
-MATCH(prod:Familia{id_prodclase:1000000*(CASE csvline.PROD_AREA WHEN 'Muebles' THEN 2  WHEN 'Ropa' THEN 1 ELSE 3 END)+ 100000*toInteger(csvline.PROD_DEP)+1000*toInteger(csvline.PROD_CLAS)+toInteger(csvline.PROD_FAM)})
+MATCH(prod:Familia{id_Familia:1000000*(CASE csvline.PROD_AREA WHEN 'Muebles' THEN 2  WHEN 'Ropa' THEN 1 ELSE 3 END)+ 100000*toInteger(csvline.PROD_DEP)+1000*toInteger(csvline.PROD_CLAS)+toInteger(csvline.PROD_FAM)})
 MERGE (c)-[r:COMPRO_CLASE]->(prod)
 ON CREATE SET r.peso = 0
 return count(prod); 
