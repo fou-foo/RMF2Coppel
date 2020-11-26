@@ -54,6 +54,8 @@ WITH csvline
 MERGE (prod:Familia{id_Familia: toInteger(csvline.id_Familia) } );
 # Build relations COMPRO_CLASE
 
+# la version enterprise y desktop parece que usa el auto periodic commit implicitamente https://community.neo4j.com/t/using-periodic-commit-for-load-csv-gives-open-transaction-error/14562/12
+
 USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM 'file:///transactional001.csv' AS csvline FIELDTERMINATOR '|'
 WITH csvline
 WHERE csvline.PROD_AREA IN ["Ropa", "Muebles"] 
