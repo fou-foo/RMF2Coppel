@@ -21,6 +21,9 @@ gcloud compute instances create my-neo4j-foo \
 https://[External_IP]:7473
 
 # Connect troght ssh to your instance and download the transaccional, demographics and products'meta features 
+sudo apt update
+sudo apt upgrade
+sudo apt-get install htop
 
 sudo su 
 cd ..
