@@ -105,16 +105,13 @@ ON CREATE SET r.peso = toFloat(csvline.weight);
 
 #######################
 # pruning familias by Business Rules 
+MATCH  (F:Familia)
+WHERE NOT ()-[:COMPRO_CLASE]->(F:Familia) 
+return count(F)
 
-MATCH  (F)
-WHERE NOT ()-[:COMPRO_CLASE]->(F:Familia)
+MATCH  (F:Familia)
+WHERE NOT ()-[:COMPRO_CLASE]->(F:Familia) 
 DETACH DELETE F
-
-
-MATCH  (F)
-WHERE NOT ()-[:COMPRO_CLASE]->(F:Familia)
-return count( distinct F.id_Familia)
-
 
 
 
