@@ -79,7 +79,16 @@ MATCH(prod:Familia{id_Familia:1000000*(CASE csvline.PROD_AREA WHEN 'Muebles' THE
 MERGE (c)-[r:COMPRO_CLASE]->(prod) ON CREATE SET r.peso = 0 ",
 {batchSize:1000, iterateList:true, parallel:true}) // no se porque el parrallel true crea condiciones de carrera (igual y el index) pero jala sin él.
 
+LOAD CSV WITH HEADERS FROM 'file:///transactional001.csv' AS csvline FIELDTERMINATOR '|'
+WITH csvline
+WHERE csvline.PROD_AREA IN ['Ropa', 'Muebles']  return csvline ", 
+"MATCH (c:Cliente{id_cte:toInteger(csvline.ID_CTE)})
+MATCH(prod:Familia{id_Familia:1000000*(CASE csvline.PROD_AREA WHEN 'Muebles' THEN 2  WHEN 'Ropa' THEN 1 ELSE 3 END)+ 100000*toInteger(csvline.PROD_DEP)+1000*toInteger(csvline.PROD_CLAS)+toInteger(csvline.PROD_FAM)})
+MERGE (c)-[r:COMPRO_CLASE]->(prod) ON CREATE SET r.peso = 0 ",
+{batchSize:100000, iterateList:true, parallel:False}) // no se porque el parrallel true crea condiciones de carrera (igual y el index) pero jala sin él.
 #######################
+
+
 MATCH (n:Familia) return count(n); //2662
 MATCH(n:Cliente) -[:COMPRO_CLASE]-> (F:Familia) return count( distinct F.id_Familia) ; // 2144
 MATCH  (F)
