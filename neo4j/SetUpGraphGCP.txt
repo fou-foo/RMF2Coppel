@@ -10,9 +10,9 @@ gcloud compute firewall-rules create allow-neo4j-bolt-https \
    
 # Create ne4j instance 
 
-# you can use gcloud init | gcloud config set project my-project-id (version 3.4.9) 
+# you can use gcloud init | gcloud config set project my-project-id (version 4.1.3) this ref. says that the image include GDSL https://community.neo4j.com/t/neo4j-3-5-1-added-to-google-cloud-platform-cluster-and-single-node-community-and-enterprise/4174  
 gcloud compute instances create my-neo4j-foo \
-    --image neo4j-enterprise-1-3-4-9-apoc \
+    --image neo4j-enterprise-1-4-1-3-apoc   \ 
     --tags neo4j \
     --image-project launcher-public
 
