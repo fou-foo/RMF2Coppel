@@ -1,0 +1,23 @@
+
+CALL gds.graph.create('FamiliasG', 'Familia',
+  {
+   PODRIA_INTERESARLE: {
+     type:'PODRIA_INTERESARLE',
+     orientation:'NATURAL'
+   }
+  })
+
+CALL gds.alpha.degree.stream('FamiliasG')
+YIELD nodeId, score
+RETURN gds.util.asNode(nodeId).name as name, score
+ORDER BY score DESC
+
+CALL gds.graph.drop('FamiliasG')
+
+MATCH (n:Cliente)-[r:COMPRO_CLASE]->(f:Familia)
+RETURN size((n)--())
+
+
+WHERE size((n)--())=1
+DELETE store_rel, n
+
