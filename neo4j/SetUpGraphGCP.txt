@@ -33,7 +33,7 @@ gsutil cp  gs://desarrollofast/prod_prod_no_conexo.csv prod_prod_no_conexo.csv
 
 # Load customer data 
 
-USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM 'file:///demo001.csv' AS line FIELDTERMINATOR '|'
+LOAD CSV WITH HEADERS FROM 'file:///demo001.csv' AS line FIELDTERMINATOR '|'
 
 CREATE (c:Cliente { id_cte:toInteger(line.ID_CTE), FECHA_NAC: date(split(line.FECHA_NAC," ")[0]), 
 GENERO: line.GENERO, EDO_CIVIL: line.EDO_CIVIL, D_EDO: toInteger(line.D_EDO),
@@ -44,7 +44,7 @@ FECHA_ALTA: date(split(line.FECHA_ALTA," ")[0]), ESTATUS_MIGRACION:toInteger(lin
 CREATE INDEX ON :Cliente(id_cte);
 
 
-# Load Families data 
+// Load Families data 
 LOAD CSV WITH HEADERS FROM 'file:///prod_prod_w.csv' AS csvline FIELDTERMINATOR ','
 WITH csvline
 MERGE (prod:Familia{id_Familia: toInteger(csvline.source) } );
@@ -55,13 +55,11 @@ WITH csvline
 MERGE (prod:Familia{id_Familia: toInteger(csvline.id_Familia) } );
 
 
-
-USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM 'file:///transactional001.csv' AS csvline FIELDTERMINATOR '|'
+LOAD CSV WITH HEADERS FROM 'file:///transactional001.csv' AS csvline FIELDTERMINATOR '|'
 WITH csvline
 WHERE csvline.Familia IN ["Ropa", "Muebles"] 
 MERGE (prod:Familia{id_Familia:1000000*(CASE csvline.PROD_AREA WHEN 'Muebles' THEN 2  WHEN 'Ropa' THEN 1 ELSE 3 END)+ 100000*toInteger(csvline.PROD_DEP)+1000*toInteger(csvline.PROD_CLAS)+toInteger(csvline.PROD_FAM)})
 ON CREATE SET prod.PROD_AREA=csvline.PROD_AREA, prod.prod_dep=toInteger(csvline.PROD_DEP), prod.prod_clas=toInteger(csvline.PROD_CLAS),prod.prod_fam=toInteger(csvline.PROD_FAM);
-
 
 CREATE INDEX ON :Familia(id_Familia);
 
@@ -70,14 +68,49 @@ CREATE INDEX ON :Familia(id_Familia);
 # la version enterprise y desktop parece que usa el auto periodic commit implicitamente https://community.neo4j.com/t/using-periodic-commit-for-load-csv-gives-open-transaction-error/14562/12
 
 CALL apoc.periodic.iterate("
+
+CALL apoc.periodic.iterate("
 LOAD CSV WITH HEADERS FROM 'file:///transactional001.csv' AS csvline FIELDTERMINATOR '|'
 WITH csvline
 WHERE csvline.PROD_AREA IN ['Ropa', 'Muebles']  return csvline ", 
 "MATCH (c:Cliente{id_cte:toInteger(csvline.ID_CTE)})
 MATCH(prod:Familia{id_Familia:1000000*(CASE csvline.PROD_AREA WHEN 'Muebles' THEN 2  WHEN 'Ropa' THEN 1 ELSE 3 END)+ 100000*toInteger(csvline.PROD_DEP)+1000*toInteger(csvline.PROD_CLAS)+toInteger(csvline.PROD_FAM)})
 MERGE (c)-[r:COMPRO_CLASE]->(prod) ON CREATE SET r.peso = 0 ",
-{batchSize:1000, iterateList:true, parallel:true}) 
+{batchSize:1000000, iterateList:true, parallel:false}) // no se porque el parrallel true crea condiciones de carrera (igual y el index) pero jala sin él.
 
+#######################
+MATCH (n:Familia) return count(n); //2662
+MATCH(n:Cliente) -[:COMPRO_CLASE]-> (F:Familia) return count( distinct F.id_Familia) ; // 2144
+MATCH  (F)
+WHERE NOT ()-[:COMPRO_CLASE]->(F:Familia)
+RETURN count( distinct F.id_Familia); // 518 
+
+LOAD CSV WITH HEADERS FROM 'file:///prod_prod_w.csv' AS csvline FIELDTERMINATOR ','
+WITH csvline
+MATCH (n:Familia{id_Familia: toInteger(csvline.source) } ) 
+MATCH (p:Familia{id_Familia: toInteger(csvline.target) } ) 
+MERGE (n)-[r:PODRIA_INTERESARLE]->(p)
+ON CREATE SET r.peso = toFloat(csvline.weight);
+
+
+#######################
+# pruning familias by Business Rules 
+
+MATCH  (F)
+WHERE NOT ()-[:COMPRO_CLASE]->(F:Familia)
+DETACH DELETE F
+
+
+MATCH  (F)
+WHERE NOT ()-[:COMPRO_CLASE]->(F:Familia)
+return count( distinct F.id_Familia)
+
+
+
+
+# delete 
+MATCH (n)
+DETACH DELETE n
 
 
 
