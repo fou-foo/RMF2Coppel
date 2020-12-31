@@ -98,3 +98,12 @@ WITH c1, em
 CREATE (c1)-[r:EDO_SIMILITUD]->(em)
 SET r.pesosimiledo=0.1;
 
+
+MATCH (em:ESTATUS_MIGRACION)
+WHERE em.estatusmigracion=11
+WITH em
+MATCH (c1:Cliente)
+WHERE c1.ESTATUS_MIGRACION=em.estatusmigracion  AND (c1:Cliente)-[:COMPRO_CLASE]->(:ProdClase) 
+WITH c1, em
+CREATE (c1)-[r:EDO_SIMILITUD]->(em)
+SET r.pesosimiledo=0.1;

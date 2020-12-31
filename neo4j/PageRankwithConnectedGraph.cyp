@@ -52,7 +52,7 @@ MATCH (clienteinit:Cliente{id_cte:49264509})
 CALL gds.pageRank.stream('graforecoconexo', {
   maxIterations: 20,
   dampingFactor: 0.85,
-  tolerance: .01,
+  tolerance: 0.01,
   relationshipTypes:['COMPRO_CLASE','EDO_SIMILITUD'],
   relationshipWeightProperty: 'peso',
   sourceNodes: [clienteinit]
