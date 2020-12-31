@@ -1,0 +1,1 @@
+MATCH (f:ProdClase) WHERE NOT ()-[:COMPRO_CLASE]->(f)  DETACH DELETE f;
