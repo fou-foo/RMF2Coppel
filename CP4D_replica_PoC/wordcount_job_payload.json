@@ -1,0 +1,7 @@
+{
+	"engine": {
+		"type": "spark"
+	},
+	"application_arguments": ["/opt/ibm/spark/examples/src/main/resources/people.txt"],
+	"application": "/opt/ibm/spark/examples/src/main/python/wordcount.py"
+}
