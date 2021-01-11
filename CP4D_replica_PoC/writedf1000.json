@@ -7,7 +7,7 @@
       "spark.executor.heartbeatInterval":"500s",
       "spark.driver.extraClassPath":"/myapp/*"
     },
-                "volumes": [{ "volume_name": "foo-instance-vol7", "source_path": "myapp", "mount_path": "/myapp" }],
+                "volumes": [{ "volume_name": "ana-v-write", "source_path": "myapp", "mount_path": "/myapp" }],
 "env": {
                         "SPARK_LOCAL_DIRS": "/home/spark/tmp",
 "PYSPARK_PYTHON": "/opt/ibm/conda/miniconda3.6/bin/python",

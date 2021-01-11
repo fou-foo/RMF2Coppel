@@ -7,12 +7,12 @@ curl -ik https://$CloudPakforData_HOSTNAME/v1/preauth/validateAuth \
  -H 'content-type: application/json' -H 'password: password' -H 'username: antoniog'
 
 # refresh it 
-TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFudG9uaW9nIiwicm9sZSI6IkFkbWluIiwicGVybWlzc2lvbnMiOlsiYWRtaW5pc3RyYXRvciIsImNhbl9wcm92aXNpb24iLCJtYW5hZ2VfY2F0YWxvZyIsImFjY2Vzc19jYXRhbG9nIiwic2lnbl9pbl9vbmx5Il0sInN1YiI6ImFudG9uaW9nIiwiaXNzIjoiS05PWFNTTyIsImF1ZCI6IkRTWCIsInVpZCI6IjY1MDExIiwiYXV0aGVudGljYXRvciI6ImRlZmF1bHQiLCJpYXQiOjE2MDg3NDY0ODksImV4cCI6MTYwODc4OTY4OX0.VRRz3Voxu6E-_iKUiqS2QFqMt15AHaz5SvmTwHDJUMeta6w-d6eP__0eb4lKA7Pn96vm2tPq4qzFMRnSMqkQ0OxBrtuFH9RdJoWOaF5gp2_ZQmcns1s1GnsWr1UW-8I5nqIDTj0f5v4y7TScxNFTwX4xDl5apCh1XE-T_efMOZrrcx-zz3XWEXG0onJmvH_zhpD6AukwpJ38bS3gg86_zCDGWvWh3gOjo_k8dTRWkDmhxC-XznA3DpgR3zuIHxcrS3Cgq74miP-4JuUk8oWWUns2NxI_QPIj3ADD_qfzEbISGnK-cyYKkD8qcRHEMw67FrqIIrS_TAcqybW4iEGtKQ"
+TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFudG9uaW9nIiwicm9sZSI6IkFkbWluIiwicGVybWlzc2lvbnMiOlsic2lnbl9pbl9vbmx5IiwiYWNjZXNzX2NhdGFsb2ciLCJhZG1pbmlzdHJhdG9yIiwiY2FuX3Byb3Zpc2lvbiIsIm1hbmFnZV9jYXRhbG9nIl0sInN1YiI6ImFudG9uaW9nIiwiaXNzIjoiS05PWFNTTyIsImF1ZCI6IkRTWCIsInVpZCI6IjY1MDExIiwiYXV0aGVudGljYXRvciI6ImRlZmF1bHQiLCJpYXQiOjE2MTAxNzMzODIsImV4cCI6MTYxMDIxNjU4Mn0.BGctQXl7XMrL6Witx_-8jM5P3qQAkWl1GDlTqs80qb05hC64CckI5puLLCBXe1uMX-pAxpMNj2EscaMa8QjvoM7f9EfCM-MJ-M2Kf5cqDHoTjaSF0Z9qAnj95VG8LYD3Nqz8XOgKLozQwYvK0djWPn264OpIw2ysUh89VWtoSGPMJLB6vwgR_EyNzBT09de1As5z9Sdm1FLgl4-1xEFAjDOw2hdvsgdQaZyClJcNapPpqfBITLMiK8JJTeNABS6-PqbAVbG6sSCf6NuoJ9cLh3brvc6Tl81vFE8TZPgCtEZzUX4pBEFwiNCpGgUSKCVSgMw5vdX88QdHCbRyus1QIw"
 
 # Spark instance creation
 curl -ik -X POST -H 'Content-Type: application/json' https://$CloudPakforData_HOSTNAME/zen-data/v2/serviceInstance \
- -H "Authorization: Bearer $TOKEN" -d '{ 	"serviceInstanceType": "spark",
-	"serviceInstanceDisplayName": "spark-instance-ws7,
+ -H "Authorization: Bearer $TOKEN" -d ' { "serviceInstanceType": "spark",
+	"serviceInstanceDisplayName": "mrf2-instance-1",
 	"serviceInstanceNamespace": "icpd-lite",
 	"serviceInstanceVersion": "3.0.1",
 	"preExistingOwner": false,
@@ -26,7 +26,7 @@ curl -ik -X POST -H 'Content-Type: application/json' https://$CloudPakforData_HO
 	"serviceInstanceDescription": "my first spark instance",
 	"metadata": {},
 	"ownerServiceInstanceUsername": "",
-	"transientFields": {} }' 
+	"transientFields": {} } ' 
 
 
 # Get instance details
@@ -39,8 +39,9 @@ SPARK_INSTANCE_ID="62ae2741e9de4c45b34948d72f516af6"
 
 
 # Start volume service
-VOLUME_INSTANCE_NAME="foo-instance-vol7"
+VOLUME_INSTANCE_NAME="mrf2-instance-vol1"
 
+# creacion de volumen 1 
 curl -ik -X POST https://$CloudPakforData_HOSTNAME/zen-data/v2/serviceInstance \
  -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d '{	"createArguments": {
 		"metadata": {
@@ -51,10 +52,11 @@ curl -ik -X POST https://$CloudPakforData_HOSTNAME/zen-data/v2/serviceInstance \
 		"serviceInstanceDescription": "app volume"
 	},
 	"preExistingOwner": false,
-	"serviceInstanceDisplayName": "foo-instance-vol7",
+	"serviceInstanceDisplayName": "rmf2-instance-vol1",
 	"serviceInstanceType": "volumes",
 	"serviceInstanceVersion": "-",
 	"transientFields": {} }' 
+
 curl -ik -X POST https://$CloudPakforData_HOSTNAME/zen-data/v1/volumes/volume_services/$VOLUME_INSTANCE_NAME \
  -H "Authorization: Bearer $TOKEN" -d '{}' -H 'Content-Type: application/json' -H 'cache-control: no-cache'
 
