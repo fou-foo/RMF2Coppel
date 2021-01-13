@@ -1,0 +1,15 @@
+{
+	"createArguments": {
+		"metadata": {
+			"storageClass": "managed-nfs-storage",
+			"storageSize": "5Gi"
+		},
+		"resources": {},
+		"serviceInstanceDescription": "app volume"
+	},
+	"preExistingOwner": false,
+	"serviceInstanceDisplayName": "app-vol-foo-ejercicio1",
+	"serviceInstanceType": "volumes",
+	"serviceInstanceVersion": "-",
+	"transientFields": {}
+} 

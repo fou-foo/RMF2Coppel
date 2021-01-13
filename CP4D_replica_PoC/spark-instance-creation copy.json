@@ -1,0 +1,16 @@
+{ 	"serviceInstanceType": "spark",
+	"serviceInstanceDisplayName": "spark-instance-sunil",
+	"serviceInstanceNamespace": "icpd-lite",
+	"serviceInstanceVersion": "3.0.1",
+	"preExistingOwner": false,
+	"createArguments": {
+		"metadata": {
+			"storageClass": "portworx-shared-gp3",
+			"storageSize": "1000Gi"
+		}
+	},
+	"parameters": {},
+	"serviceInstanceDescription": "my first spark instance",
+	"metadata": {},
+	"ownerServiceInstanceUsername": "",
+	"transientFields": {} }

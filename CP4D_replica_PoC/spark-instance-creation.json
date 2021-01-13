@@ -1,0 +1,18 @@
+{	"serviceInstanceType": "spark",
+	"serviceInstanceDisplayName": "spark-instance_test1",
+	"serviceInstanceNamespace": "icpd-lite",
+	"serviceInstanceVersion": "3.0.1",
+	"preExistingOwner": false,
+	"createArguments": {
+		"metadata": {
+			"volumeName": "spark-test1",
+			"storageClass": "",
+			"storageSize": ""
+		}
+	},
+	"parameters": {},
+	"serviceInstanceDescription": "my first spark instance",
+	"metadata": {},
+	"ownerServiceInstanceUsername": "",
+	"transientFields": {}
+}
