@@ -2,7 +2,7 @@ WITH "MATCH (clienteinit:Cliente_con_compras{id_cte:"+$idcte_q+"}) CALL gds.page
   maxIterations: 20,
   dampingFactor: 0.85,
   tolerance: 0.01,
-  relationshipTypes:['COMPRO_CLASE','EDO_SIMILITUD'],
+  relationshipTypes:['COMPRO_CLASE','EDO_SIMILITUD','PODRIA_INTERESARLE'],
   relationshipWeightProperty: 'peso',
   sourceNodes: [clienteinit]})
 YIELD nodeId, score

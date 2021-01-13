@@ -6,7 +6,9 @@ CALL gds.graph.create(
         ProdClase: { label: 'ProdClase' },
 		Genero: {label: 'GENERO'},
 		edocivil:{label: 'EDO_CIVIL'},
-		estado:{label:'ESTADO'}
+		estado:{label:'ESTADO'},
+		estatus_migracion:{label:'ESTATUS_MIGRACION'},
+		nivel_edu:{label:'NIVEL_EDUC'}
     },{
         COMPRO_CLASE: {
             type: 'COMPRO_CLASE',
@@ -25,19 +27,28 @@ CALL gds.graph.create(
 			          property:'pesosimiledo'
 				      }
 			}
-        }
+        },
+		PODRIA_INTERESARLE:{
+            type: 'PODRIA_INTERESARLE',
+            orientation: 'UNDIRECTED',
+			properties: {
+			   peso: {
+			          property:'peso'
+				      }
+			}
+        },
+		
     
 	}
 	)
 	
 YIELD graphName, nodeCount, relationshipCount;
 
-
 WITH "MATCH (clienteinit:Cliente_con_compras{id_cte:"+$idcte_q+"}) CALL gds.pageRank.stream('graforecoconexo_con_compras', {
   maxIterations: 20,
   dampingFactor: 0.85,
   tolerance: 0.01,
-  relationshipTypes:['COMPRO_CLASE','EDO_SIMILITUD'],
+  relationshipTypes:['COMPRO_CLASE','EDO_SIMILITUD','PODRIA_INTERESARLE'],
   relationshipWeightProperty: 'peso',
   sourceNodes: [clienteinit]})
 YIELD nodeId, score
