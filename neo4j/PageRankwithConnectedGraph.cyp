@@ -1,8 +1,8 @@
 CALL gds.graph.create(
 
 
-  'graforecoconexo',{
-    Cliente: { label: 'Cliente' },
+  'graforecoconexo_con_compras',{
+    Cliente: { label: 'Cliente_con_compras' },
         ProdClase: { label: 'ProdClase' },
 		Genero: {label: 'GENERO'},
 		edocivil:{label: 'EDO_CIVIL'},
@@ -32,7 +32,7 @@ CALL gds.graph.create(
 	
 YIELD graphName, nodeCount, relationshipCount;
 
-MATCH (clienteinit:Cliente{id_cte:49264509})
+MATCH (clienteinit:Cliente_con_compras{id_cte:25026933})
 CALL gds.pageRank.stream.estimate('graforecoconexo', {
   maxIterations: 20,
   dampingFactor: 0.85,
@@ -48,8 +48,8 @@ return requiredMemory;
 
 
 
-MATCH (clienteinit:Cliente{id_cte:49264509})
-CALL gds.pageRank.stream('graforecoconexo', {
+MATCH (clienteinit:Cliente_con_compras{id_cte:25026933})
+CALL gds.pageRank.stream('graforecoconexo_con_compras', {
   maxIterations: 20,
   dampingFactor: 0.85,
   tolerance: 0.01,
