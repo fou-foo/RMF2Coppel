@@ -36,7 +36,7 @@ CALL gds.graph.create(
 			          property:'peso'
 				      }
 			}
-        },
+        }
 		
     
 	}
