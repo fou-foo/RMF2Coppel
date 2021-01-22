@@ -7,7 +7,6 @@ CALL gds.graph.create(
 		Genero: {label: 'GENERO'},
 		edocivil:{label: 'EDO_CIVIL'},
 		estado:{label:'ESTADO'},
-		estatus_migracion:{label:'ESTATUS_MIGRACION'},
 		nivel_edu:{label:'NIVEL_EDUC'}
     },{
         COMPRO_CLASE: {
