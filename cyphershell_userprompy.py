@@ -47,6 +47,6 @@ while get_recommendation == "s":
     elif(modl == "2"):
         print("TODO")
     else:
-        print("opcion invalida") 
-    get_recommendation=input("quiere otra recomendacion?(s/n)")    
+        print("opcion invalida")
+    get_recommendation = input("quiere otra recomendacion?(s/n)")
         
