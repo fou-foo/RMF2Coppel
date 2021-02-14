@@ -7,7 +7,7 @@ import json, time
 from ibmaemagic import AnalyticsEngineClient
 #e.g
 CloudPakforData_HOSTNAME = "icpd-zen.cp4dvip.coppel.io"
-USER = "antoniog"
+USER = "juancp"
 PASSWORD = "password"
 SPARK_INSTANCE = "coppel-spark-instance"
 
@@ -20,12 +20,9 @@ volume_instance_payload = {
 	"metadata": {
 		"storageClass": "portworx-shared-gp3",
 		"storageSize": "20Gi"
-	},
-	"resources": {},
-	"serviceInstanceDescription": "app volume"
-}
+	},"resources": {}, "serviceInstanceDescription": "app volume"}
 
 #Create volume instance
 #client.create_volume("app-vol2",create_arguments=volume_instance_payload)
-client.create_volume("app-vol2_foo1",create_arguments=volume_instance_payload)
+client.create_volume("appvol2_c1",create_arguments=volume_instance_payload)
 print('Se creo el volumen !!!!!------------------------')
