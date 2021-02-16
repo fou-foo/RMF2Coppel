@@ -24,5 +24,5 @@ volume_instance_payload = {
 
 #Create volume instance
 #client.create_volume("app-vol2",create_arguments=volume_instance_payload)
-client.create_volume("appvol2_c1",create_arguments=volume_instance_payload)
+respuesta = client.create_volume("appvol2jc2",create_arguments=volume_instance_payload)
 print('Se creo el volumen !!!!!------------------------')

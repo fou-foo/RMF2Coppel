@@ -6,7 +6,7 @@ from ibmaemagic import AnalyticsEngineClient
 CloudPakforData_HOSTNAME = "icpd-zen.cp4dvip.coppel.io"
 USER = "antoniog"
 PASSWORD = "password"
-SPARK_INSTANCE = "coppel-spark-instance"
+SPARK_INSTANCE = "JCPRUEBA"
 
 # Initializing client
 client = AnalyticsEngineClient(host=CloudPakforData_HOSTNAME, uid=USER, pwd=PASSWORD)
@@ -23,7 +23,7 @@ write_job_payload={
 			"spark.driver.extraClassPath": "/myapp/*"
 		},
 		"volumes": [{
-			"volume_name": "volgp3",
+			"volume_name": "pruebajcvol",
 			"source_path": "myapp",
 			"mount_path": "/myapp"
 		}],
