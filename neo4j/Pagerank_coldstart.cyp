@@ -9,6 +9,6 @@ YIELD nodeId, score
 WITH gds.util.asNode(nodeId) as node, score
 WHERE node:ProdClase
 RETURN node.id_prodclase AS id_prodclase, score" as query
-CALL apoc.export.csv.query(query, "resultados_reco.csv", {})
+CALL apoc.export.csv.query(query, $filename, {})
 YIELD file, nodes, relationships, properties, data
 RETURN file, nodes, relationships, properties, data;
