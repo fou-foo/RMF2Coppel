@@ -1,0 +1,28 @@
+Aceptación del riesgo por parte de:
+Direccion(Dulce???)
+
+Tony Saracho
+Documento debe contener:
+Necesidad, impacto de no contar con esta aplicación.
+
+Mitigar probabilidad de riesgos.
+
+Luis comenta:
+PMR de IBM: para parches
+
+Soporte para correcto funcionamiento del aparato
+Plantear a ciberdefensa:
+PMR como control compensatorio.
+
+Equipo Cyberdefensa:
+Jesús Vega, Aida
+Ver si es viable scans periódicos.
+Nosotros podemos incluir controles compensatorios adicionales solicitados por 
+SLA 
+
+Plantear la pregunta concreta de cual es la vulnerabilidad inherente en RHEL 6.
+
+Incluir en reunión a:
+Victor chavez
+y 
+el partner de peñu

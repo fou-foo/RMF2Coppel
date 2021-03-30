@@ -1,0 +1,8 @@
+MATCH (em:ESTATUS_MIGRACION)
+             WHERE em.estatusmigracion=9
+             WITH em
+             MATCH (c1:Cliente)
+             WHERE c1.ESTATUS_MIGRACION=em.estatusmigracion  AND (c1:Cliente)-[:COMPRO_CLASE]->(:ProdClase) 
+             WITH c1, em
+             MATCH (c1)-[r:EDO_SIMILITUD]->(gen)
+             return distinct gen limit 10;
