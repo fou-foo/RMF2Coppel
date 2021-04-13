@@ -4,7 +4,7 @@ import json, time
 from ibmaemagic import AnalyticsEngineClient
 #e.g
 CloudPakforData_HOSTNAME = "icpd-zen.cp4dvip.coppel.io"
-USER = "antoniog"
+USER = "juancp"
 PASSWORD = "password"
 SPARK_INSTANCE = "JCPRUEBA"
 
